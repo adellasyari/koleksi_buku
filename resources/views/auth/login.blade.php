@@ -39,6 +39,11 @@
                             <div class="mt-3">
                                 <button type="submit" class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn">Masuk</button>
                             </div>
+                            <div class="mt-2">
+                                <a href="/auth/google" class="btn btn-block btn-google auth-form-btn" style="background-color: #db4437; color: white;">
+                                    <i class="mdi mdi-google me-2"></i> Masuk dengan Google
+                                </a>
+                            </div>
                             <div class="my-2 d-flex justify-content-between align-items-center">
                                 @if (Route::has('password.request'))
                                     <a class="auth-link" href="{{ route('password.request') }}">Lupa password?</a>
