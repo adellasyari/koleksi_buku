@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Barang;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+class BarangController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        $barang = Barang::all();
+        return view('admin.barang.index', compact('barang'));
+    }
+
+    /**
+     * Process label printing request and generate PDF.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function cetakLabel(Request $request)
+    {
+        // Accept items from either 'items' (labels_index) or 'barang_id' (existing form)
+        $ids = $request->input('items', $request->input('barang_id', []));
+
+        // Start X and Y can be provided either as start_x/start_y or posisi_x/posisi_y
+        $startX = max(1, (int) $request->input('start_x', $request->input('posisi_x', 1)));
+        $startY = max(1, (int) $request->input('start_y', $request->input('posisi_y', 1)));
+
+        $cols = 5;
+        $rows = 8;
+        $slotsPerPage = $cols * $rows; // 40 labels per sheet
+
+        $startX = min($cols, $startX);
+        $startY = min($rows, $startY);
+
+        // compute start index (0-based) to skip occupied slots
+        $startIndex = ($startY - 1) * $cols + ($startX - 1);
+
+        $selected = Barang::whereIn('id_barang', $ids)->orderBy('id_barang')->get();
+
+        // Label size (TnJ 108) and paper size in mm
+        $labelWidth = 38.0;  // mm
+        $labelHeight = 18.0; // mm
+
+        $paperWidth = 210.0; // mm (21 cm)
+        $paperHeight = 165.0; // mm (16.5 cm)
+
+        // Margins and gaps in mm
+        $marginTop = 7.5;  // mm
+        $marginLeft = 1.5; // mm
+        $gapX = 3.5; // horizontal gap (mm)
+        $gapY = 2.0; // vertical gap (mm)
+
+        $pages = [];
+        foreach ($selected as $idx => $item) {
+            $pos = $startIndex + $idx;
+            $pageNo = intdiv($pos, $slotsPerPage);
+            $posInPage = $pos % $slotsPerPage;
+
+            $col = $posInPage % $cols;
+            $row = intdiv($posInPage, $cols);
+
+            $x = $marginLeft + ($col * ($labelWidth + $gapX));
+            $y = $marginTop + ($row * ($labelHeight + $gapY));
+
+            $pages[$pageNo][] = [
+                'item' => $item,
+                'x' => $x,
+                'y' => $y,
+            ];
+        }
+
+        // convert mm to point for Dompdf (1 mm = 2.83465 pt)
+        $mmToPt = 2.83465;
+        $customPaper = [0, 0, $paperWidth * $mmToPt, $paperHeight * $mmToPt];
+
+        $data = [
+            'pages' => $pages,
+            'labelWidth' => $labelWidth,
+            'labelHeight' => $labelHeight,
+            'calibrate' => (bool) $request->input('calibrate', false),
+        ];
+
+        $pdf = Pdf::loadView('admin.barang.labels_print', $data)->setPaper($customPaper);
+        return $pdf->stream('labels_tnj_108.pdf');
+    }
+    /**
+     * Show the form for editing the specified barang.
+     *
+     * @param  string  $id
+     * @return \Illuminate\View\View
+     */
+    public function edit($id)
+    {
+        $barang = Barang::where('id_barang', $id)->first();
+        return view('admin.barang.edit', compact('barang'));
+    }
+
+    /**
+     * Update the specified barang in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'harga' => 'required',
+        ]);
+
+        Barang::where('id_barang', $id)->update([
+            'nama' => $request->nama,
+            'harga' => $request->harga,
+        ]);
+
+        return redirect('/barang')->with('success', 'Data berhasil diubah!');
+    }
+
+    /**
+     * Remove the specified barang from storage.
+     *
+     * @param  string  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        Barang::where('id_barang', $id)->delete();
+        return back()->with('success', 'Data dihapus!');
+    }
+}

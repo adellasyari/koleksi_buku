@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BukuController;
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OtpController;
@@ -37,6 +38,13 @@ Route::redirect('/', '/home');
 // Protected routes (requires authentication)
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/barang', [BarangController::class, 'index']);
+    Route::post('/cetak-label', [BarangController::class, 'cetakLabel']);
+    Route::get('/barang/create', [BarangController::class, 'create']);
+    Route::post('/barang/store', [BarangController::class, 'store']);
+    Route::get('/barang/{id}/edit', [BarangController::class, 'edit']);
+    Route::put('/barang/{id}', [BarangController::class, 'update']);
+    Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 
     // Routes for Buku and Kategori
     Route::resource('buku', BukuController::class);

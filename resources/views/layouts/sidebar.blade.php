@@ -34,6 +34,12 @@
         <i class="mdi mdi-book-open-page-variant menu-icon"></i>
       </a>
     </li>
+    <li class="nav-item {{ Request::is('barang*') ? 'active' : '' }}">
+      <a class="nav-link" href="{{ url('/barang') }}">
+        <span class="menu-title">Barang UMKM</span>
+        <i class="mdi mdi-package-variant-closed menu-icon"></i>
+      </a>
+    </li>
     <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#pdf-dropdown" aria-expanded="false" aria-controls="pdf-dropdown">
         <span class="menu-title">Export PDF</span>
