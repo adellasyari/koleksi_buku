@@ -20,17 +20,78 @@ class BarangController extends Controller
     }
 
     /**
-     * Process label printing request and generate PDF.
+     * Show the form for creating a new barang.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        return view('admin.barang.create');
+    }
+
+    /**
+     * Show the DOM simulation view (frontend-only practice page).
+     *
+     * @return \Illuminate\View\View
+     */
+    public function simulasiDom()
+    {
+        return view('admin.barang.simulasi_dom');
+    }
+
+    /**
+     * Show the DataTables-based DOM simulation view.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function simulasiDatatables()
+    {
+        return view('admin.barang.simulasi_datatables');
+    }
+
+    /**
+     * Show the Select/Select2 simulation view.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function simulasiSelect()
+    {
+        return view('admin.barang.simulasi_select');
+    }
+
+    /**
+     * Store a newly created barang in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function cetakLabel(Request $request)
+    public function store(Request $request)
     {
-        // Accept items from either 'items' (labels_index) or 'barang_id' (existing form)
-        $ids = $request->input('items', $request->input('barang_id', []));
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'harga' => 'required|numeric',
+        ]);
 
-        // Start X and Y can be provided either as start_x/start_y or posisi_x/posisi_y
+        Barang::create([
+            'nama' => $request->nama,
+            'harga' => $request->harga,
+        ]);
+
+        return redirect('/barang')->with('success', 'Data berhasil disimpan!');
+    }
+
+    /**
+     * Generate and stream labels PDF (Tom & Jerry 108 layout).
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function labelsPrint(Request $request)
+    {
+        // Accept items from form field 'barang_id' or 'items'
+        $ids = $request->input('barang_id', $request->input('items', []));
+
+        // Start positions (1-based) with fallbacks
         $startX = max(1, (int) $request->input('start_x', $request->input('posisi_x', 1)));
         $startY = max(1, (int) $request->input('start_y', $request->input('posisi_y', 1)));
 
@@ -41,7 +102,7 @@ class BarangController extends Controller
         $startX = min($cols, $startX);
         $startY = min($rows, $startY);
 
-        // compute start index (0-based) to skip occupied slots
+        // compute start index (0-based)
         $startIndex = ($startY - 1) * $cols + ($startX - 1);
 
         $selected = Barang::whereIn('id_barang', $ids)->orderBy('id_barang')->get();
@@ -92,6 +153,7 @@ class BarangController extends Controller
         $pdf = Pdf::loadView('admin.barang.labels_print', $data)->setPaper($customPaper);
         return $pdf->stream('labels_tnj_108.pdf');
     }
+
     /**
      * Show the form for editing the specified barang.
      *

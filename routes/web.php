@@ -41,10 +41,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/barang', [BarangController::class, 'index']);
     Route::post('/cetak-label', [BarangController::class, 'cetakLabel']);
     Route::get('/barang/create', [BarangController::class, 'create']);
+    Route::get('/barang/simulasi-dt', [BarangController::class, 'simulasiDatatables'])->name('barang.simulasidt');
+    Route::get('/barang/simulasi', [BarangController::class, 'simulasiDom'])->name('barang.simulasi');
+    Route::get('/barang/simulasi-select', [BarangController::class, 'simulasiSelect'])->name('barang.simulasi.select');
     Route::post('/barang/store', [BarangController::class, 'store']);
     Route::get('/barang/{id}/edit', [BarangController::class, 'edit']);
     Route::put('/barang/{id}', [BarangController::class, 'update']);
     Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
+    // Simulation view for DOM practical (frontend-only)
+    Route::get('/simulasi-dom', function () { return view('admin.barang.simulasi_dom'); });
 
     // Routes for Buku and Kategori
     Route::resource('buku', BukuController::class);

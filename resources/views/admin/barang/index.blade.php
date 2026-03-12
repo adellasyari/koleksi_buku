@@ -8,7 +8,12 @@
 		<div class="card-header">
 			<h4 class="card-title">Daftar Barang UMKM</h4>
 		</div>
-		<a href="{{ url('/barang/create') }}" class="btn btn-primary btn-sm mb-3">Tambah Barang Baru</a>
+		<div class="mb-3">
+			<a href="{{ url('/barang/create') }}" class="btn btn-primary btn-sm">Tambah Barang Baru</a>
+			<a href="{{ route('barang.simulasi') }}" class="btn btn-info btn-sm ms-2">Simulasi DOM Modul 4</a>
+			<a href="{{ route('barang.simulasidt') }}" class="btn btn-success btn-sm ms-2">Simulasi DataTables Modul 4</a>
+			<a href="{{ route('barang.simulasi.select') }}" class="btn btn-warning btn-sm ms-2">Simulasi Select Modul 4</a>
+		</div>
 		<div class="card-body">
 			<div class="table-responsive">
 						<div class="mb-2">
