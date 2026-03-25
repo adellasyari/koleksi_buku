@@ -30,36 +30,6 @@ class BarangController extends Controller
     }
 
     /**
-     * Show the DOM simulation view (frontend-only practice page).
-     *
-     * @return \Illuminate\View\View
-     */
-    public function simulasiDom()
-    {
-        return view('admin.barang.simulasi_dom');
-    }
-
-    /**
-     * Show the DataTables-based DOM simulation view.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function simulasiDatatables()
-    {
-        return view('admin.barang.simulasi_datatables');
-    }
-
-    /**
-     * Show the Select/Select2 simulation view.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function simulasiSelect()
-    {
-        return view('admin.barang.simulasi_select');
-    }
-
-    /**
      * Store a newly created barang in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -154,6 +124,17 @@ class BarangController extends Controller
         return $pdf->stream('labels_tnj_108.pdf');
     }
 
+    /**
+     * Compatibility wrapper for legacy route name `cetakLabel`.
+     * Calls the new `labelsPrint` implementation so existing routes keep working.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function cetakLabel(Request $request)
+    {
+        return $this->labelsPrint($request);
+    }
     /**
      * Show the form for editing the specified barang.
      *

@@ -40,6 +40,60 @@
         <i class="mdi mdi-package-variant-closed menu-icon"></i>
       </a>
     </li>
+    <li class="nav-item {{ Request::is('pos*') ? 'active' : '' }}">
+      <a class="nav-link" data-bs-toggle="collapse" href="#ui-pos" aria-expanded="{{ Request::is('pos*') ? 'true' : 'false' }}" aria-controls="ui-pos">
+        <span class="menu-title">Kasir / POS</span>
+        <i class="mdi mdi-cart menu-icon"></i>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse {{ Request::is('pos*') ? 'show' : '' }}" id="ui-pos">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pos.index') }}">AJAX jQuery</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('pos.axios') }}">Axios</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item {{ Request::is('wilayah*') ? 'active' : '' }}">
+      <a class="nav-link" data-bs-toggle="collapse" href="#ui-wilayah" aria-expanded="{{ Request::is('wilayah*') ? 'true' : 'false' }}" aria-controls="ui-wilayah">
+        <span class="menu-title">Wilayah</span>
+        <i class="mdi mdi-map-marker menu-icon"></i>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse {{ Request::is('wilayah*') ? 'show' : '' }}" id="ui-wilayah">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('wilayah.index') }}">AJAX (jQuery)</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('wilayah.axios') }}">Axios (Vanilla JS)</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item {{ Request::is('simulasi*') ? 'active' : '' }}">
+      <a class="nav-link" data-bs-toggle="collapse" href="#ui-simulasi" aria-expanded="{{ Request::is('simulasi*') ? 'true' : 'false' }}" aria-controls="ui-simulasi">
+        <span class="menu-title">Simulasi Modul 4</span>
+        <i class="mdi mdi-flask menu-icon"></i>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse {{ Request::is('simulasi*') ? 'show' : '' }}" id="ui-simulasi">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('simulasi.dom') }}">DOM</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('simulasi.datatables') }}">DataTables</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('simulasi.select') }}">Select</a>
+          </li>
+        </ul>
+      </div>
+    </li>
     <li class="nav-item">
       <a class="nav-link" data-bs-toggle="collapse" href="#pdf-dropdown" aria-expanded="false" aria-controls="pdf-dropdown">
         <span class="menu-title">Export PDF</span>

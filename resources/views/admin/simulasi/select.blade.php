@@ -2,58 +2,62 @@
 @section('title', 'Simulasi Select - Praktikum')
 
 <style>
-    /* Make Select2 match Bootstrap .form-control appearance and vertically center text */
-    .select2-container .select2-selection--single {
-        height: 38px; /* match typical Bootstrap input height */
-        padding: .375rem .75rem; /* same padding as .form-control */
-        display: flex;
-        align-items: center; /* vertically center the rendered text */
-        border: 1px solid #ced4da; /* use Bootstrap input border color instead of black */
-        border-radius: .25rem;
-        background-color: #fff;
-        box-shadow: none; /* remove unwanted black shadow */
+    /* Strong Select2 overrides to match Bootstrap form-control height and center content */
+    .select2-container--default .select2-selection--single {
+        min-height: 45px !important;     /* match Bootstrap input height */
+        height: auto !important;
+        display: flex !important;
+        align-items: center !important;  /* vertical centering */
+        padding: 0 .75rem !important;    /* horizontal padding like .form-control */
+        border-radius: .25rem !important;
+        border: 1px solid #ced4da !important;
+        background: #fff !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
     }
 
-    /* Ensure rendered text is vertically centered and ellipsized when long */
+    /* Rendered selection / placeholder vertically centered */
     .select2-container--default .select2-selection--single .select2-selection__rendered {
-        display: block;
-        margin: 0;
-        padding: 0;
-        line-height: normal; /* let flex+align-items handle vertical centering */
-        color: #495057; /* Bootstrap form text color */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        display: block !important;
+        height: 45px !important;
+        line-height: 45px !important;    /* vertical center the text */
+        padding: 0 !important;
+        color: #495057 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        box-sizing: border-box !important;
     }
 
-    /* Align the dropdown arrow vertically to center */
-    .select2-container .select2-selection__arrow {
-        height: 100%;
-        top: 0;
-        display: flex;
-        align-items: center;
-        padding-left: .5rem;
+    /* Placeholder should also be vertically centered */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        line-height: 45px !important;
+        padding: 0 !important;
     }
 
-    /* Remove Select2's default black focus border; use Bootstrap focus shadow */
-    .select2-container--default.select2-container--focus .select2-selection--single,
-    .select2-container--default .select2-selection--single:focus,
-    .select2-container--default .select2-selection--single:active {
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.12);
-        border-color: #86b7fe;
+    /* Arrow centered on the right */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        right: .5rem !important;
+        top: 0 !important;
+        width: 2.5rem !important;
+        box-sizing: border-box !important;
     }
 
-    /* Make Select2 inherit form width behavior */
-    .select2-container--default .select2-selection--single .select2-selection__rendered,
-    .select2-container .select2-selection--single {
-        width: 100%;
-        min-height: 38px;
+    /* Focus styling consistent with Bootstrap */
+    .select2-container--default.select2-container--open .select2-selection--single,
+    .select2-container--default .select2-selection--single:focus {
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.12) !important;
+        border-color: #86b7fe !important;
+        outline: none !important;
     }
 
-    /* If you used .form-select on the original <select>, make select2 look consistent */
+    /* If original select uses .form-select, keep border-radius consistent */
     select.form-select + .select2-container .select2-selection--single {
-        border-radius: .25rem;
+        border-radius: .25rem !important;
     }
 </style>
 
