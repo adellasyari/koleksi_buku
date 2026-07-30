@@ -207,11 +207,50 @@
 
         axios.post(bayarUrl, { _token: '{{ csrf_token() }}', cart: cart })
           .then(function (response) {
+            if (response && response.data) {
+              const res = response.data;
+              if (typeof Swal !== 'undefined') Swal.fire('Berhasil', 'Pembayaran berhasil.', 'success');
+              else alert('Pembayaran berhasil.');
+
+              // clear UI
+              $('#tabel-keranjang tbody').empty();
+              $('#total-harga').text('Total Harga: Rp 0');
+              $btn.prop('disabled', false).html(originalHtml);
+
+              // If backend returned qrCode (data URI), show it in modal (Axios version)
+              if (res && res.qrCode) {
+                $('#qrModalOrderId').text(res.penjualan_id);
+                $('#qrModalImg').attr('src', res.qrCode);
+                $('#qrModalPrint').attr('href', '/pos/receipt/' + encodeURIComponent(res.penjualan_id));
+                // Show modal in a Bootstrap 5-compatible way, fallback to jQuery modal if available
+                try {
+                  if (typeof bootstrap !== 'undefined' && typeof bootstrap.Modal === 'function') {
+                    const modalEl = document.getElementById('qrModal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.show();
+                  } else if (typeof $ !== 'undefined' && $.fn && $.fn.modal) {
+                    $('#qrModal').modal('show');
+                  } else {
+                    // last resort: make it visible
+                    $('#qrModal').show();
+                  }
+                } catch (e) {
+                  console.error('Modal show error', e);
+                  if (typeof $ !== 'undefined') $('#qrModal').show();
+                }
+                return;
+              }
+
+              // Fallback: if penjualan_id present, redirect to receipt page
+              if (res && res.penjualan_id) {
+                window.location = '/pos/receipt/' + encodeURIComponent(res.penjualan_id);
+                return;
+              }
+            }
+
+            // Generic fallback success UI updates
             if (typeof Swal !== 'undefined') Swal.fire('Berhasil', 'Pembayaran berhasil.', 'success');
             else alert('Pembayaran berhasil.');
-            // clear UI
-            $('#tabel-keranjang tbody').empty();
-            $('#total-harga').text('Total Harga: Rp 0');
             $btn.prop('disabled', false).html(originalHtml);
           })
           .catch(function (error) {
@@ -227,5 +266,25 @@
     });
   })(jQuery);
 </script>
+
+<!-- QR Modal (Bootstrap) -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="qrModalLabel">QR Code Pesanan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p style="font-weight:600">ID Pesanan: <span id="qrModalOrderId"></span></p>
+        <img id="qrModalImg" src="" alt="QR Code" width="180" height="180" style="max-width:100%;height:auto" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        <a id="qrModalPrint" href="#" class="btn btn-primary" target="_blank">Cetak Struk</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 @endsection

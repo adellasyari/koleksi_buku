@@ -20,6 +20,9 @@
             </div>
         </form>
 
+        <!-- Scanner container for Html5Qrcode -->
+        <div id="reader" style="width:100%;max-width:720px;margin:16px auto;"></div>
+
         <div class="table-responsive">
             <table id="tabel-simulasi-dt" class="table table-bordered">
                 <thead class="table-light">
@@ -155,6 +158,45 @@
                 if (modalInstance) modalInstance.hide();
             });
         });
+    </script>
+    <!-- Html5Qrcode library -->
+    <script src="/js/html5-qrcode.min.js"></script>
+    <script>
+        // Start scanner with requested configuration
+        // Replace any existing start() usage with this function
+        function startHtml5QrCodeScanner(onSuccess, onError) {
+            const readerId = "reader"; // element id
+            const html5QrCode = new Html5Qrcode(readerId);
+
+            const config = {
+                fps: 10,
+                qrbox: { width: 300, height: 150 },
+                videoConstraints: {
+                    width: { min: 640, ideal: 1280 },
+                    height: { min: 480, ideal: 720 },
+                    facingMode: "user"
+                }
+            };
+
+            // camera selection by facingMode (use front webcam)
+            const cameraConfig = { facingMode: "user" };
+
+            html5QrCode.start(
+                cameraConfig,
+                config,
+                (decodedText, decodedResult) => {
+                    if (typeof onSuccess === 'function') onSuccess(decodedText, decodedResult);
+                },
+                (errorMessage) => {
+                    if (typeof onError === 'function') onError(errorMessage);
+                }
+            ).catch(err => {
+                console.error('Html5Qrcode start failed:', err);
+                if (typeof onError === 'function') onError(err);
+            });
+
+            return html5QrCode; // caller can keep instance to stop later
+        }
     </script>
 @endpush
 

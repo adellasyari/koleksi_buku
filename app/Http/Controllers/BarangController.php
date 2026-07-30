@@ -20,6 +20,33 @@ class BarangController extends Controller
     }
 
     /**
+     * Process barcode scan (AJAX).
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function prosesScan(Request $request)
+    {
+        $barcode = $request->barcode;
+
+        if (empty($barcode)) {
+            return response()->json(['error' => 'Barcode tidak dikirim'], 422);
+        }
+
+        $barang = Barang::where('id_barang', $barcode)->first();
+
+        if (!$barang) {
+            return response()->json(['error' => 'Barang tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'idbarang' => $barang->id_barang,
+            'nama_barang' => $barang->nama,
+            'harga_barang' => $barang->harga,
+        ]);
+    }
+
+    /**
      * Show the form for creating a new barang.
      *
      * @return \Illuminate\View\View
@@ -113,14 +140,21 @@ class BarangController extends Controller
         $mmToPt = 2.83465;
         $customPaper = [0, 0, $paperWidth * $mmToPt, $paperHeight * $mmToPt];
 
+        $barang = $selected;
+
         $data = [
             'pages' => $pages,
             'labelWidth' => $labelWidth,
             'labelHeight' => $labelHeight,
             'calibrate' => (bool) $request->input('calibrate', false),
+            'barang' => $barang,
         ];
 
-        $pdf = Pdf::loadView('admin.barang.labels_print', $data)->setPaper($customPaper);
+        $viewName = $request->query('type') === 'barcode'
+            ? 'admin.barang.labels_print_barcode'
+            : 'admin.barang.labels_print';
+
+        $pdf = Pdf::loadView($viewName, $data)->setPaper($customPaper);
         return $pdf->stream('labels_tnj_108.pdf');
     }
 

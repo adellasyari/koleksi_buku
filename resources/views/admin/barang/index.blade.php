@@ -70,6 +70,7 @@
 								</div>
 
 								<button type="submit" class="btn btn-success mt-3">Cetak Label Harga</button>
+								<button type="button" id="btn-cetak-barcode" class="btn btn-info mt-3 ms-2">Cetak Barcode</button>
 							</form>
 			</div>
 		</div>
@@ -132,6 +133,19 @@
 				});
 				return true;
 			});
+
+						// Cetak Barcode button: submit same form but add query ?type=barcode to the action
+						$('#btn-cetak-barcode').on('click', function(e){
+							e.preventDefault();
+							var $form = $('#form-cetak');
+							var orig = $form.data('original-action') || $form.attr('action');
+							$form.data('original-action', orig);
+							var newAction = orig + (orig.indexOf('?') === -1 ? '?type=barcode' : '&type=barcode');
+							$form.attr('action', newAction);
+							$form.submit();
+							// restore original action shortly after submit
+							setTimeout(function(){ $form.attr('action', orig); }, 200);
+						});
 
 			// initial sync
 			table.draw(false);

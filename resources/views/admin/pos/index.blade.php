@@ -63,6 +63,14 @@
             <h3 class="mb-0" id="total-harga">Total Harga: Rp 0</h3>
             <button type="button" class="btn btn-success" id="btn-bayar">Bayar</button>
           </div>
+
+              {{-- Jika controller/route mengirimkan $qrCode (base64) dan $id_pesanan, tampilkan QR code di bawah detail transaksi --}}
+              @isset($qrCode)
+                <div class="mt-3 text-center">
+                  <p style="margin-bottom:6px;font-weight:600">ID Pesanan: {{ $id_pesanan }}</p>
+                  <img src="data:image/png;base64,{{ $qrCode }}" alt="QR {{ $id_pesanan }}" width="150" height="150" />
+                </div>
+              @endisset
         </div>
       </div>
     </div>
@@ -222,7 +230,7 @@
           cart.push({ id_barang: id_barang, jumlah: jumlah, subtotal: subtotal });
         });
 
-        $.ajax({
+          $.ajax({
           url: "{{ route('pos.bayar') }}",
           method: 'POST',
           data: {
@@ -230,6 +238,11 @@
             cart: cart
           },
           success: function (res) {
+            // if server returned penjualan_id, redirect to receipt page so controller can build QR
+            if (res && res.penjualan_id) {
+              window.location = "{{ url('/pos/receipt') }}/" + encodeURIComponent(res.penjualan_id);
+              return;
+            }
             if (typeof Swal !== 'undefined') {
               Swal.fire('Berhasil', 'Pembayaran berhasil.', 'success');
             } else {
